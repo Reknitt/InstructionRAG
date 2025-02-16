@@ -1,0 +1,6 @@
+@InstructionRAG_HostAddress = http://localhost:5232
+
+GET {{InstructionRAG_HostAddress}}/api/interact/query-model?content=rwerew
+Accept: application/json
+
+###
