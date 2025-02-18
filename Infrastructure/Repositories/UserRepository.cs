@@ -21,9 +21,12 @@ public class UserRepository(IDbContextFactory<SqliteDbContext> dbContextFactory)
         throw new NotImplementedException();
     }
 
-    public Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        await using var context  = await _dbContextFactory.CreateDbContextAsync();
+        var query = context.Users.Where(u => u.Email == email);
+        var user = await query.FirstOrDefaultAsync();
+        return user;
     }
 
     public async Task<bool> CreateAsync(User user)

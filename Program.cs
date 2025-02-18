@@ -30,6 +30,9 @@ builder.Services.AddSingleton<IModelService, ModelService>();
 builder.Services.AddSingleton<IModelLoadingStrategy, LocalModelLoader>();
 builder.Services.AddSingleton<IChatRepository, ChatRepository>();
 builder.Services.AddSingleton<IChatService, ChatService>();
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddDbContextFactory<SqliteDbContext>();
 
 builder.Services.AddIdentity<User, IdentityRole>()

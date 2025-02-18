@@ -13,9 +13,9 @@ public class UserService(IUserRepository userRepository) : IUserService
         return user;
     }
 
-    public async Task<User?> GetUserByUsernameAsync(string username)
+    public async Task<User?> GetUserByEmailAsync(string email)
     {
-        var user = await _userRepository.GetByUsernameAsync(username);
+        var user = await _userRepository.GetByEmailAsync(email);
         return user;
     }
 
@@ -30,8 +30,8 @@ public class UserService(IUserRepository userRepository) : IUserService
         passwordHasher.HashPassword(user, password);
         
          /*
-         * по моему тут как-то неправильно сделано, нужно подумать как сделать лучше
-         * возвращаемое значение
+         * TODO: по моему тут как-то неправильно сделано, нужно подумать как сделать лучше
+         *       возвращаемое значение
          */
          var count = await _userRepository.CreateAsync(user);
         return count;

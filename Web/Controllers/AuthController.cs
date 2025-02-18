@@ -8,7 +8,7 @@ namespace InstructionRAG.Web.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class UsersController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     
@@ -24,5 +24,5 @@ public class UsersController(IAuthService authService) : ControllerBase
     {
         var res = await _authService.Login(request);
         return res ? Ok(res) : Unauthorized();
-    } 
+    }
 }
