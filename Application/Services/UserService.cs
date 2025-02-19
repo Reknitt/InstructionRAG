@@ -19,13 +19,8 @@ public class UserService(IUserRepository userRepository) : IUserService
         return user;
     }
 
-    public async Task<bool> CreateUserAsync(string email, string password)
+    public async Task<bool> CreateUserAsync(string email, string passwordHash)
     {
-        
-        // TODO: убрать отсюда детали реализации хэширования, это же сервис, тут только абстракция
-        var passwordHasher = new PasswordHasher<User>();
-        string passwordHash = passwordHasher.HashPassword(null, password);
-        
         var user = new User
         {
             Email = email,

@@ -1,3 +1,5 @@
+using System.Text;
+using InstructionRAG.Application.Config;
 using InstructionRAG.Application.Interfaces;
 using InstructionRAG.Application.Services;
 using InstructionRAG.Domain.Entities;
@@ -6,8 +8,10 @@ using InstructionRAG.Infrastructure.Database;
 using InstructionRAG.Infrastructure.Models;
 using InstructionRAG.Infrastructure.Repositories;
 using InstructionRAG.Infrastructure.Strategies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.AI;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +29,9 @@ builder.Services.Configure<ModelConfig>(modelConfig);
 var sqliteDatabaseConfig = builder.Configuration.GetSection("SqliteDatabaseConfig");
 builder.Services.Configure<SqliteDatabaseConfig>(sqliteDatabaseConfig);
 
+var jwtConfig = builder.Configuration.GetSection("JwtConfig");
+builder.Services.Configure<JwtConfig>(jwtConfig);
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
@@ -40,8 +47,26 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddDbContextFactory<SqliteDbContext>();
 
 
-builder.Services.AddAuthentication()
-    .AddBearerToken();
+builder.Services.AddAuthentication(config =>
+{
+    config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(jwt =>
+{
+    jwt.RequireHttpsMetadata = false;
+    jwt.SaveToken = false;
+    jwt.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtConfig.GetValue<string>("Secret"))
+        ),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 var app = builder.Build();
 
@@ -57,9 +82,10 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();
