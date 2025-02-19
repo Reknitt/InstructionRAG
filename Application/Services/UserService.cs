@@ -19,21 +19,25 @@ public class UserService(IUserRepository userRepository) : IUserService
         return user;
     }
 
-    public async Task<bool> CreateUserAsync(string username, string password)
+    public async Task<bool> CreateUserAsync(string email, string password)
     {
+        
+        // TODO: убрать отсюда детали реализации хэширования, это же сервис, тут только абстракция
+        var passwordHasher = new PasswordHasher<User>();
+        string passwordHash = passwordHasher.HashPassword(null, password);
+        
         var user = new User
         {
-            UserName = username,
+            Email = email,
+            PasswordHash = passwordHash 
         };
 
-        var passwordHasher = new PasswordHasher<User>();
-        passwordHasher.HashPassword(user, password);
-        
          /*
          * TODO: по моему тут как-то неправильно сделано, нужно подумать как сделать лучше
          *       возвращаемое значение
          */
          var count = await _userRepository.CreateAsync(user);
+         
         return count;
     }
 

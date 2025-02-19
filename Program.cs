@@ -12,6 +12,9 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Configuration.AddJsonFile("appsettings.json", true, true);
@@ -32,15 +35,13 @@ builder.Services.AddSingleton<IChatRepository, ChatRepository>();
 builder.Services.AddSingleton<IChatService, ChatService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddDbContextFactory<SqliteDbContext>();
 
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<SqliteDbContext>()
-    .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication()
-    .AddCookie();
+    .AddBearerToken();
 
 var app = builder.Build();
 
@@ -50,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
 
 app.UseHttpsRedirection();
 
