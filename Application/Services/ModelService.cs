@@ -5,22 +5,22 @@ namespace InstructionRAG.Application.Services;
 
 public class ModelService(IModelLoadingStrategy loadingStrategy) : IModelService
 {
-    private IModel _model;
+    private IModel Model { get; set; } 
 
     public async Task InitializeAsync()
     {
-        _model = await loadingStrategy.LoadModelAsync();
+        Model = await loadingStrategy.LoadModelAsync();
     }
     public ModelInfoResponse GetInfo()
     {
-        if (_model == null)
+        if (Model == null)
             throw new NullReferenceException("Model is null");
-        return _model.GetInfo(); 
+        return Model.GetInfo(); 
     }
 
     public async IAsyncEnumerable<QueryModelResponse> QueryAsync(QueryModelRequest query)
     {
-        await foreach (var response in _model.ProccessTextAsync (query.Content))
+        await foreach (var response in Model.ProccessTextAsync (query.Content))
         {
             yield return response;
         }

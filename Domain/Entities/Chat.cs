@@ -4,8 +4,7 @@ namespace InstructionRAG.Domain.Entities;
 
 public class Chat
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Title { get; set; }
-    public string ChatId { get; set; }
-    public string Context { get; set; }
+    public StringBuilder Context { get; set; }
 }

@@ -7,9 +7,13 @@ namespace InstructionRAG.Web.Controllers;
 
 [ApiController]
 [Route("api/interact")]
-public class InteractController(IModelService modelService) : ControllerBase
+public class InteractController(
+    IModelService modelService,
+    IChatService chatService
+    ) : ControllerBase
 {
     private readonly IModelService _modelService = modelService;
+    private readonly IChatService _chatService = chatService;
 
     [HttpPut("init-model")]
     public async Task<IActionResult> InitModel()
@@ -23,8 +27,6 @@ public class InteractController(IModelService modelService) : ControllerBase
     {
         return Ok(_modelService.GetInfo());
     }
-
-    
 
     [HttpPost("query-model")]
     public async Task<IActionResult> QueryModel([FromBody] QueryModelRequest queryModelRequest)
