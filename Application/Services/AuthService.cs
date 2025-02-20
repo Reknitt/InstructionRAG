@@ -30,7 +30,7 @@ public class AuthService(
         
         _logger.LogInformation("User with email: {Email} was found.", request.Email);
 
-        var result = VerifyPassword(request.Password, user.PasswordHash);
+        var result = VerifyPassword(user.PasswordHash, request.Password);
         
         _logger.LogWarning("Result of password verification is {Result}", result); 
         
@@ -47,9 +47,12 @@ public class AuthService(
     {
         // проверяем на уникальный email
         var user = await _userService.GetUserByEmailAsync(request.Email);
-        if (user == null)
-            return await _userService.CreateUserAsync(request.Email, request.Password);
-        return false;
+        
+        if (user != null)
+            throw new Exception("User with provided email already exists.");
+            
+        string passwordHash = HashPassword(request.Password);
+        return await _userService.CreateUserAsync(request.Email, passwordHash);
     }
 
     string HashPassword(string password)
@@ -63,7 +66,7 @@ public class AuthService(
     {
         var passwordHasher = new PasswordHasher<User>();
         var result = passwordHasher.VerifyHashedPassword(null, passwordHash, password);
-        return result != PasswordVerificationResult.Success;
+        return result == PasswordVerificationResult.Success;
     }
 
     string GenerateJwtToken(User user)
