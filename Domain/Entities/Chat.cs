@@ -6,5 +6,6 @@ public class Chat
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
-    public StringBuilder Context { get; set; }
+    public string Context { get; set; }
+    public User User { get; set; }
 }

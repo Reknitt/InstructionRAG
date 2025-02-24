@@ -9,18 +9,30 @@ namespace InstructionRAG.Web.Controllers;
 [ApiController]
 [Route("api/chats")]
 [Authorize]
-public class ChatController(IChatService chatService) : ControllerBase
+public class ChatController(
+    IChatService chatService,
+    IUserService userService
+    ) : ControllerBase
 {
     private readonly IChatService _chatService = chatService;
+    private readonly IUserService _userService = userService;
      
     [HttpGet("init-chat")]
     public async Task<IActionResult> InitChat([FromQuery] InitChatRequest request)
     {
-        var uuid = await _chatService.CreateChatAsync(request);
-        
+        Chat chat = await _chatService.CreateChatAsync(request);
+        User? user = await _userService.GetUserByEmailAsync(request.Email);
+
+        // по идее не может быть user == null надо будет проследить это все
+        if (user is null)
+            return Unauthorized();
+
+        chat.User = user;
+        await _chatService.UpdateAsync(chat);
+         
         return Ok(new
         {
-            chatId = uuid
+            chatId = chat.Id.ToString()
         });
     }
 

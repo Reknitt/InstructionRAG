@@ -19,12 +19,8 @@ namespace InstructionRAG.Migrations
 
             modelBuilder.Entity("InstructionRAG.Domain.Entities.Chat", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ChatId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Context")
@@ -35,7 +31,7 @@ namespace InstructionRAG.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -66,9 +62,13 @@ namespace InstructionRAG.Migrations
 
             modelBuilder.Entity("InstructionRAG.Domain.Entities.Chat", b =>
                 {
-                    b.HasOne("InstructionRAG.Domain.Entities.User", null)
+                    b.HasOne("InstructionRAG.Domain.Entities.User", "User")
                         .WithMany("Chats")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InstructionRAG.Domain.Entities.User", b =>

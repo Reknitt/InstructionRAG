@@ -34,7 +34,6 @@ public class UserRepository(
 
     public async Task<bool> CreateAsync(User user)
     {
-        Console.WriteLine(user.Email);
         await using var context = await _dbContextFactory.CreateDbContextAsync();
         var userInDb = context.Users.Add(user);
         int count = await context.SaveChangesAsync();
@@ -42,5 +41,17 @@ public class UserRepository(
         _logger.LogInformation($"info: User {user.Email} has been created");
         
         return count == 1;
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == user.Email); 
+        
+        if (existingUser == null)
+            throw new ArgumentException("User does not exist");
+        
+        context.Entry(existingUser).CurrentValues.SetValues(user);
+        await context.SaveChangesAsync();
     }
 }

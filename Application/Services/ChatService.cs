@@ -15,21 +15,26 @@ public class ChatService(IChatRepository chatRepository) : IChatService
         return chat;
     }
 
-    public async Task<string> CreateChatAsync(InitChatRequest request)
+    public async Task<Chat> CreateChatAsync(InitChatRequest request)
     {
         var chat = new Chat
         {
             Title = request.Title,
-            Context = new StringBuilder(""),
+            Context = new string(""),
         };
 
         // Возможно стоит тут обработать исключение, хотя это можно сделать и выше уровнем
-        Guid chatID = await _chatRepository.CreateAsync(chat);
-        return chatID.ToString();
+        Chat chatDb = await _chatRepository.CreateAsync(chat);
+        return chatDb;
     }
 
     public Task<Chat> AddMessageToChatAsync(string chatId, string message)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task UpdateAsync(Chat chat)
+    {
+        await _chatRepository.UpdateAsync(chat);
     }
 }

@@ -20,17 +20,23 @@ public class ChatRepository(IDbContextFactory<SqliteDbContext> dbContextFactory)
         return chat;
     }
 
-    public async Task<Guid> CreateAsync(Chat chat)
+    public async Task<Chat> CreateAsync(Chat chat)
     {
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-        // await dbContext.Database.EnsureCreatedAsync();
         Chat chatFromDb = dbContext.Chats.Add(chat).Entity;
         await dbContext.SaveChangesAsync();
-        return chatFromDb.Id;
+        return chatFromDb;
     }
 
-    public Task<Chat> UpdateAsync(Chat chat)
+    public async Task UpdateAsync(Chat chat)
     {
-        throw new NotImplementedException();
+        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        var chatFromDb = await dbContext.Chats.Where(e => e.Id == chat.Id).FirstOrDefaultAsync();
+        
+        if (chatFromDb == null)
+            throw new Exception("Chat with provided uuid does not exist");
+        
+        dbContext.Entry(chatFromDb).CurrentValues.SetValues(chat);
+        await dbContext.SaveChangesAsync();
     }
 }
