@@ -6,3 +6,4 @@
 *.db
 *.db.back
 .DS_Store
+.env

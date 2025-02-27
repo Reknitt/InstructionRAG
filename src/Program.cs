@@ -21,13 +21,13 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Configuration.AddJsonFile("appsettings.json", true, true);
+builder.Configuration.AddJsonFile("./src/appsettings.json", true, true);
 
 var modelConfig = builder.Configuration.GetSection("ModelConfig");
 builder.Services.Configure<ModelConfig>(modelConfig);
 
 var sqliteDatabaseConfig = builder.Configuration.GetSection("SqliteDatabaseConfig");
-builder.Services.Configure<SqliteDatabaseConfig>(sqliteDatabaseConfig);
+builder.Services.Configure<PostgresDbConfig>(sqliteDatabaseConfig);
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 builder.Services.Configure<JwtConfig>(jwtConfig);
@@ -44,7 +44,7 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddDbContextFactory<SqliteDbContext>();
+builder.Services.AddDbContextFactory<PostgresDbContext>();
 
 
 builder.Services.AddAuthentication(config =>
@@ -54,13 +54,14 @@ builder.Services.AddAuthentication(config =>
     config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(jwt =>
 {
+    string secret = jwtConfig.GetValue<string>("Secret");
     jwt.RequireHttpsMetadata = false;
     jwt.SaveToken = false;
     jwt.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtConfig.GetValue<string>("Secret"))
+            Encoding.UTF8.GetBytes(secret)
         ),
         ValidateIssuer = false,
         ValidateAudience = false,

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InstructionRAG.Infrastructure.Repositories;
 
-public class ChatRepository(IDbContextFactory<SqliteDbContext> dbContextFactory) : IChatRepository
+public class ChatRepository(IDbContextFactory<ApplicationDbContext> dbContextFactory) : IChatRepository
 {
-    private readonly IDbContextFactory<SqliteDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<Chat> GetByGuidAsync(Guid uuid)
     {

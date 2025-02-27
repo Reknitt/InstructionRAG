@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 namespace InstructionRAG.Infrastructure.Repositories;
 
 public class UserRepository(
-    IDbContextFactory<SqliteDbContext> dbContextFactory, 
+    IDbContextFactory<ApplicationDbContext> dbContextFactory, 
     ILogger<UserRepository> logger) : IUserRepository
 {
-    private readonly IDbContextFactory<SqliteDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
     private readonly ILogger<UserRepository> _logger = logger;
     
     public async Task<IEnumerable<User>> GetAllAsync()
