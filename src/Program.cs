@@ -26,8 +26,8 @@ builder.Configuration.AddJsonFile("./src/appsettings.json", true, true);
 var modelConfig = builder.Configuration.GetSection("ModelConfig");
 builder.Services.Configure<ModelConfig>(modelConfig);
 
-var sqliteDatabaseConfig = builder.Configuration.GetSection("SqliteDatabaseConfig");
-builder.Services.Configure<PostgresDbConfig>(sqliteDatabaseConfig);
+var dbConfig = builder.Configuration.GetSection("DbConfig");
+builder.Services.Configure<ApplicationDbConfig>(dbConfig);
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 builder.Services.Configure<JwtConfig>(jwtConfig);
@@ -44,7 +44,7 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddDbContextFactory<PostgresDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>();
 
 
 builder.Services.AddAuthentication(config =>

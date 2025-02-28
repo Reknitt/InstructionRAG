@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 namespace InstructionRAG.Infrastructure.Database;
 
 // TODO: можно отрефакторить, чтобы был универсальный dbConfig т.к. там все равно только constring
-public class PostgresDbContext(IOptions<PostgresDbConfig> dbConfig) : ApplicationDbContext
+public class PostgresDbContext(IOptions<PostgresDbConfig> options) : DbContext
 {
-    private readonly PostgresDbConfig _dbConfig = dbConfig.Value;
+    private readonly PostgresDbConfig _dbConfig = options.Value;
         
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

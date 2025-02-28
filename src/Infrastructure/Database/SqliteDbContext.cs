@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace InstructionRAG.Infrastructure.Database;
 
-public class SqliteDbContext(IOptions<SqliteDatabaseConfig> dbConfig) : ApplicationDbContext 
+public class SqliteDbContext(IOptions<SqliteDatabaseConfig> dbConfig) : DbContext
 {
     private readonly SqliteDatabaseConfig _dbConfig = dbConfig.Value;
     
