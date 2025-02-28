@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InstructionRAG.Infrastructure.Repositories;
 
-public class ChatRepository(IDbContextFactory<ApplicationDbContext> dbContextFactory) : IChatRepository
+public class ChatRepository(IDbContextFactory<ApplicationDbContext> dbContext) : IChatRepository
 {
-    private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
+    //private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<Chat> GetByGuidAsync(Guid uuid)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        //await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         Chat? chat = await dbContext.Chats.Where(c => c.Id == uuid).FirstAsync();
         
         if (chat == null)
@@ -22,7 +22,7 @@ public class ChatRepository(IDbContextFactory<ApplicationDbContext> dbContextFac
 
     public async Task<Chat> CreateAsync(Chat chat)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        //await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         Chat chatFromDb = dbContext.Chats.Add(chat).Entity;
         await dbContext.SaveChangesAsync();
         return chatFromDb;
@@ -30,7 +30,7 @@ public class ChatRepository(IDbContextFactory<ApplicationDbContext> dbContextFac
 
     public async Task UpdateAsync(Chat chat)
     {
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+        //await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         var chatFromDb = await dbContext.Chats.Where(e => e.Id == chat.Id).FirstOrDefaultAsync();
         
         if (chatFromDb == null)

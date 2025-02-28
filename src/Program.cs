@@ -10,6 +10,7 @@ using InstructionRAG.Infrastructure.Repositories;
 using InstructionRAG.Infrastructure.Strategies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -26,8 +27,8 @@ builder.Configuration.AddJsonFile("./src/appsettings.json", true, true);
 var modelConfig = builder.Configuration.GetSection("ModelConfig");
 builder.Services.Configure<ModelConfig>(modelConfig);
 
-var sqliteDatabaseConfig = builder.Configuration.GetSection("SqliteDatabaseConfig");
-builder.Services.Configure<PostgresDbConfig>(sqliteDatabaseConfig);
+var postgresDatabaseConfig= builder.Configuration.GetSection("PostgresDbConfig");
+builder.Services.Configure<PostgresDbConfig>(postgresDatabaseConfig);
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 builder.Services.Configure<JwtConfig>(jwtConfig);
@@ -44,7 +45,7 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddDbContextFactory<PostgresDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>();
 
 
 builder.Services.AddAuthentication(config =>
