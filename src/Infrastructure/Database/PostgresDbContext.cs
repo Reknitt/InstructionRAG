@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 namespace InstructionRAG.Infrastructure.Database;
 
 // TODO: можно отрефакторить, чтобы был универсальный dbConfig т.к. там все равно только constring
+[Obsolete("LEGACY!")]
 public class PostgresDbContext(IOptions<PostgresDbConfig> options) : DbContext
 {
     private readonly PostgresDbConfig _dbConfig = options.Value;

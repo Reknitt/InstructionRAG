@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InstructionRAG.Migrations
 {
-    [DbContext(typeof(SqliteDbContext))]
-    [Migration("20250224140455_InitialCreate")]
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20250303142302_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

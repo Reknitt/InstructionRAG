@@ -7,7 +7,7 @@ namespace InstructionRAG.Application.Interfaces;
 public interface IChatService
 {
     Task<Chat> GetChatAsync(Guid uuid);
-    Task<Chat> CreateChatAsync(InitChatRequest request);
-    Task<Chat> AddMessageToChatAsync(string chatId, string message);
+    Task<Chat> CreateChatAsync(Chat request);
+    Task<Chat> AddMessageToChatAsync(Guid chatId, string message);
     Task UpdateAsync(Chat chat);
 }
