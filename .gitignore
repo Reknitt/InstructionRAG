@@ -7,3 +7,4 @@
 *.db.back
 .DS_Store
 .env
+*.gguf

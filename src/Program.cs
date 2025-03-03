@@ -2,15 +2,11 @@ using System.Text;
 using InstructionRAG.Application.Config;
 using InstructionRAG.Application.Interfaces;
 using InstructionRAG.Application.Services;
-using InstructionRAG.Domain.Entities;
 using InstructionRAG.Infrastructure.Config;
 using InstructionRAG.Infrastructure.Database;
-using InstructionRAG.Infrastructure.Models;
 using InstructionRAG.Infrastructure.Repositories;
 using InstructionRAG.Infrastructure.Strategies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.AI;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -26,8 +22,8 @@ builder.Configuration.AddJsonFile("./src/appsettings.json", true, true);
 var modelConfig = builder.Configuration.GetSection("ModelConfig");
 builder.Services.Configure<ModelConfig>(modelConfig);
 
-var sqliteDatabaseConfig = builder.Configuration.GetSection("SqliteDatabaseConfig");
-builder.Services.Configure<PostgresDbConfig>(sqliteDatabaseConfig);
+var dbConfig = builder.Configuration.GetSection("DbConfig");
+builder.Services.Configure<ApplicationDbConfig>(dbConfig);
 
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 builder.Services.Configure<JwtConfig>(jwtConfig);
@@ -35,16 +31,15 @@ builder.Services.Configure<JwtConfig>(jwtConfig);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-// TODO: почитать про другие варианты инжекта зависимостей и заменить
 builder.Services.AddSingleton<IModelService, ModelService>();
 builder.Services.AddSingleton<IModelLoadingStrategy, LocalModelLoader>();
-builder.Services.AddSingleton<IChatRepository, ChatRepository>();
-builder.Services.AddSingleton<IChatService, ChatService>();
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddDbContextFactory<PostgresDbContext>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddDbContext<ApplicationDbContext>();
 
 
 builder.Services.AddAuthentication(config =>
@@ -75,7 +70,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    // TODO: убрать хардкод url
+    app.MapScalarApiReference(c =>
+    {
+        c.AddServer(new ScalarServer("http://api.localhost"));
+    });
 }
 
 

@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 namespace InstructionRAG.Infrastructure.Repositories;
 
 public class UserRepository(
-    IDbContextFactory<ApplicationDbContext> dbContextFactory, 
+    ApplicationDbContext context, 
     ILogger<UserRepository> logger) : IUserRepository
 {
-    private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory = dbContextFactory;
+    private readonly ApplicationDbContext _context = context;
     private readonly ILogger<UserRepository> _logger = logger;
     
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-        await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var users = context.Users.ToList(); 
+        // await using var context = await _dbContext.CreateDbContextAsync();
+        var users = _context.Users.ToList(); 
         return users;
     }
 
@@ -26,17 +26,17 @@ public class UserRepository(
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        await using var context  = await _dbContextFactory.CreateDbContextAsync();
-        var query = context.Users.Where(u => u.Email == email);
+        // await using var context  = await _context.CreateDbContextAsync();
+        var query = _context.Users.Where(u => u.Email == email);
         var user = await query.FirstOrDefaultAsync();
         return user;
     }
 
     public async Task<bool> CreateAsync(User user)
     {
-        await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var userInDb = context.Users.Add(user);
-        int count = await context.SaveChangesAsync();
+        // await using var context = await _context.CreateDbContextAsync();
+        var userInDb = _context.Users.Add(user);
+        int count = await _context.SaveChangesAsync();
         
         _logger.LogInformation($"info: User {user.Email} has been created");
         
@@ -45,13 +45,13 @@ public class UserRepository(
 
     public async Task UpdateAsync(User user)
     {
-        await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == user.Email); 
+        // await using var context = await _context.CreateDbContextAsync();
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email); 
         
         if (existingUser == null)
             throw new ArgumentException("User does not exist");
         
-        context.Entry(existingUser).CurrentValues.SetValues(user);
-        await context.SaveChangesAsync();
+        _context.Entry(existingUser).CurrentValues.SetValues(user);
+        await _context.SaveChangesAsync();
     }
 }

@@ -20,19 +20,29 @@ public class ChatController(
     [HttpGet("init-chat")]
     public async Task<IActionResult> InitChat([FromQuery] InitChatRequest request)
     {
-        Chat chat = await _chatService.CreateChatAsync(request);
         User? user = await _userService.GetUserByEmailAsync(request.Email);
 
         // по идее не может быть user == null надо будет проследить это все
         if (user is null)
-            return Unauthorized();
+            return Unauthorized("User was not found");
 
-        chat.User = user;
-        await _chatService.UpdateAsync(chat);
+        var chat = new Chat()
+        {
+            Title = request.Title,
+            User = user,
+            Context = "",
+        };
+        
+        await _chatService.CreateChatAsync(chat);
+        
+        //await _chatService.UpdateAsync(chat);
          
         return Ok(new
         {
-            chatId = chat.Id.ToString()
+            chatId = chat.Id.ToString(),
+            chatTitle = chat.Title,
+            userId = user.Id.ToString(),
+            userEmail = user.Email
         });
     }
 

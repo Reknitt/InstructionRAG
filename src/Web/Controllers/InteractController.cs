@@ -31,13 +31,13 @@ public class InteractController(
     [HttpPost("query-model")]
     public async Task<IActionResult> QueryModel([FromBody] QueryModelRequest queryModelRequest)
     {
-        var sbResponse = new StringBuilder();
+        var chatId = queryModelRequest.ChatId;
+
         await foreach (var response in _modelService.QueryAsync(queryModelRequest))
         {
-            Console.Write(response.Response);
-            sbResponse.Append(response.Response);
+            await _chatService.AddMessageToChatAsync(chatId, response.Response);
         }
 
-        return Ok(sbResponse.ToString());
+        return Ok(chatId);
     }
 }

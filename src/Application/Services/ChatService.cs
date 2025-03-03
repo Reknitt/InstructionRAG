@@ -15,22 +15,20 @@ public class ChatService(IChatRepository chatRepository) : IChatService
         return chat;
     }
 
-    public async Task<Chat> CreateChatAsync(InitChatRequest request)
+    public async Task<Chat> CreateChatAsync(Chat chat)
     {
-        var chat = new Chat
-        {
-            Title = request.Title,
-            Context = new string(""),
-        };
-
         // Возможно стоит тут обработать исключение, хотя это можно сделать и выше уровнем
         Chat chatDb = await _chatRepository.CreateAsync(chat);
         return chatDb;
     }
 
-    public Task<Chat> AddMessageToChatAsync(string chatId, string message)
+    //TODO: сделать прослойку в виде буфера и хранить чат в памяти и только после некоторого времени писать в бд
+    public async Task<Chat> AddMessageToChatAsync(Guid chatId, string message)
     {
-        throw new NotImplementedException();
+        Chat chatDb = await _chatRepository.GetByGuidAsync(chatId);
+        chatDb.Context += message;
+        await _chatRepository.UpdateAsync(chatDb);
+        return chatDb;
     }
 
     public async Task UpdateAsync(Chat chat)
