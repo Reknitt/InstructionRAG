@@ -5,6 +5,7 @@ using InstructionRAG.Application.Config;
 using InstructionRAG.Application.DTOs;
 using InstructionRAG.Application.Interfaces;
 using InstructionRAG.Domain.Entities;
+using InstructionRAG.Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -49,7 +50,7 @@ public class AuthService(
         var user = await _userService.GetUserByEmailAsync(request.Email);
         
         if (user != null)
-            throw new Exception("User with provided email already exists.");
+            throw new UserAlreadyExistsException(request.Email);
             
         string passwordHash = HashPassword(request.Password);
         return await _userService.CreateUserAsync(request.Email, passwordHash);

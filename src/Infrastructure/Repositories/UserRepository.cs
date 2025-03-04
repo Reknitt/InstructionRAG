@@ -1,5 +1,6 @@
 using InstructionRAG.Application.Interfaces;
 using InstructionRAG.Domain.Entities;
+using InstructionRAG.Domain.Exceptions;
 using InstructionRAG.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ public class UserRepository(
     {
         // await using var context = await _dbContext.CreateDbContextAsync();
         var users = _context.Users.ToList(); 
-        return users;
+        return users ?? throw new UserException("The table Users is empty.");
     }
 
     public Task<User?> GetByIdAsync(int id)
@@ -26,15 +27,13 @@ public class UserRepository(
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        // await using var context  = await _context.CreateDbContextAsync();
         var query = _context.Users.Where(u => u.Email == email);
         var user = await query.FirstOrDefaultAsync();
-        return user;
+        return user ?? throw new UserAlreadyExistsException(email);
     }
 
     public async Task<bool> CreateAsync(User user)
     {
-        // await using var context = await _context.CreateDbContextAsync();
         var userInDb = _context.Users.Add(user);
         int count = await _context.SaveChangesAsync();
         
@@ -45,11 +44,10 @@ public class UserRepository(
 
     public async Task UpdateAsync(User user)
     {
-        // await using var context = await _context.CreateDbContextAsync();
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email); 
         
         if (existingUser == null)
-            throw new ArgumentException("User does not exist");
+            throw new UserNotFoundException(user.Email);
         
         _context.Entry(existingUser).CurrentValues.SetValues(user);
         await _context.SaveChangesAsync();

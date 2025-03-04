@@ -11,26 +11,23 @@ public class ChatRepository(ApplicationDbContext dbContext) : IChatRepository
 
     public async Task<Chat> GetByGuidAsync(Guid uuid)
     {
-        // await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         Chat? chat = await _dbContext.Chats.Where(c => c.Id == uuid).FirstAsync();
         
         if (chat == null)
-            throw new Exception("Chat with provided uuid does not exist");
+            throw new ArgumentException("Chat with provided uuid does not exist");
         
         return chat;
     }
 
     public async Task<Chat> CreateAsync(Chat chat)
     {
-        // await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         Chat chatFromDb = _dbContext.Chats.Add(chat).Entity;
         await _dbContext.SaveChangesAsync();
-        return chatFromDb;
+        return chatFromDb ?? throw new ApplicationException("Failed to add chat.");
     }
 
     public async Task UpdateAsync(Chat chat)
     {
-        // await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
         var chatFromDb = await _dbContext.Chats.Where(e => e.Id == chat.Id).FirstOrDefaultAsync();
         
         if (chatFromDb == null)

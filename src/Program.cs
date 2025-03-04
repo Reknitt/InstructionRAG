@@ -6,7 +6,9 @@ using InstructionRAG.Infrastructure.Config;
 using InstructionRAG.Infrastructure.Database;
 using InstructionRAG.Infrastructure.Repositories;
 using InstructionRAG.Infrastructure.Strategies;
+using InstructionRAG.Web.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -66,6 +68,8 @@ builder.Services.AddAuthentication(config =>
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -87,5 +91,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

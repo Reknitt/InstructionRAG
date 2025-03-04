@@ -23,17 +23,10 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
-        try
+        var token = await _authService.Login(request);
+        return Ok(new
         {
-            var token = await _authService.Login(request);
-            return Ok(new
-            {
-                token = token
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+            token = token
+        });
     }
 }
