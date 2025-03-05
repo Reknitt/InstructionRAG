@@ -29,7 +29,7 @@ public class UserRepository(
     {
         var query = _context.Users.Where(u => u.Email == email);
         var user = await query.FirstOrDefaultAsync();
-        return user ?? throw new UserAlreadyExistsException(email);
+        return user;
     }
 
     public async Task<bool> CreateAsync(User user)
