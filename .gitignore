@@ -8,4 +8,6 @@
 *.db.back
 .DS_Store
 .env
+*.db-shm
+*.db-wal
 *.gguf

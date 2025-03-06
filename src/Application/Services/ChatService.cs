@@ -5,9 +5,13 @@ using InstructionRAG.Domain.Entities;
 
 namespace InstructionRAG.Application.Services;
 
-public class ChatService(IChatRepository chatRepository) : IChatService
+public class ChatService(
+    IChatRepository chatRepository,
+    ILogger<ChatService> logger
+    ) : IChatService
 {
     private readonly IChatRepository _chatRepository = chatRepository;
+    private readonly ILogger<ChatService> _logger = logger;
    
     public async Task<Chat> GetChatAsync(Guid uuid)
     {
@@ -17,6 +21,7 @@ public class ChatService(IChatRepository chatRepository) : IChatService
 
     public async Task<Chat> CreateChatAsync(Chat chat)
     {
+        _logger.LogInformation("Creating new chat");
         // Возможно стоит тут обработать исключение, хотя это можно сделать и выше уровнем
         Chat chatDb = await _chatRepository.CreateAsync(chat);
         return chatDb;

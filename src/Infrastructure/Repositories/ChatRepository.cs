@@ -5,9 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InstructionRAG.Infrastructure.Repositories;
 
-public class ChatRepository(ApplicationDbContext dbContext) : IChatRepository
+public class ChatRepository(
+    ApplicationDbContext dbContext,
+    ILogger<ChatRepository> logger
+    ) : IChatRepository
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly ILogger<ChatRepository> _logger = logger;
 
     public async Task<Chat> GetByGuidAsync(Guid uuid)
     {
@@ -21,8 +25,11 @@ public class ChatRepository(ApplicationDbContext dbContext) : IChatRepository
 
     public async Task<Chat> CreateAsync(Chat chat)
     {
+        _logger.LogInformation("Creating new chat");
         Chat chatFromDb = _dbContext.Chats.Add(chat).Entity;
+        _logger.LogInformation("Created chat with uuid: {uuid} and title: {title}", chatFromDb.Id, chatFromDb.Title);
         await _dbContext.SaveChangesAsync();
+        _logger.LogInformation("Save chat with title: {title} to db", chatFromDb.Title);
         return chatFromDb ?? throw new ApplicationException("Failed to add chat.");
     }
 

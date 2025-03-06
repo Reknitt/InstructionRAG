@@ -11,11 +11,13 @@ namespace InstructionRAG.Web.Controllers;
 [Authorize]
 public class ChatController(
     IChatService chatService,
-    IUserService userService
+    IUserService userService,
+    ILogger<ChatController> logger
     ) : ControllerBase
 {
     private readonly IChatService _chatService = chatService;
     private readonly IUserService _userService = userService;
+    private readonly ILogger<ChatController> _logger = logger;
      
     [HttpGet("init-chat")]
     public async Task<IActionResult> InitChat([FromQuery] InitChatRequest request)
@@ -24,8 +26,12 @@ public class ChatController(
 
         // по идее не может быть user == null надо будет проследить это все
         if (user is null)
+        {
+            _logger.LogInformation("User with provided email: {email} was not found", user.Email);
             return Unauthorized("User was not found");
+        }
 
+        _logger.LogInformation("Initializing chat for user with email: {email}", user.Email);
         var chat = new Chat()
         {
             Title = request.Title,

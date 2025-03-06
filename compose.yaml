@@ -33,6 +33,8 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - HTTP_PORTS=${HTTP_PORT}
+    volumes:
+      - ./database.db:/app/database.db
     #ports:
       #- ${HOST_HTTP_PORT}:${HTTP_PORT}
        

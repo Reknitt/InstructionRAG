@@ -22,6 +22,7 @@ public class ModelService(IModelLoadingStrategy loadingStrategy) : IModelService
     {
         await foreach (var response in Model.ProccessTextAsync (query.Content))
         {
+            Console.WriteLine(response.Response);
             yield return response;
         }
     }
